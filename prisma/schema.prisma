@@ -1,0 +1,50 @@
+generator client{
+    provider = "prisma-client-js"
+}
+
+datasource db{
+    provider="postgresql"
+    url = env("DATABASE_URL")
+}
+
+model File{
+    id            String          @id @default(uuid())
+    filename      String
+    path          String
+    status        FileStatus      @default(PENDING)
+    message       String?
+    retryCount    Int             @default(0)
+    createdAt     DateTime        @default(now())
+    updatedAt     DateTime        @updatedAt
+
+    processedRows ProcessedRows[]
+    jobLogs       JobLog[] 
+}
+
+model ProcessedRows{
+    id Int    @id @default(autoincrement())
+    fileId    String
+    name      String
+    email     String
+    phone     String
+    createdAt DateTime @default(now())
+
+    file File @relation(fields:[fileId], references:[id])
+}
+
+model JobLog{
+    id Int    @id @default(autoincrement())
+    fileId    String
+    event     String
+    message   String
+    createdAt DateTime @default(now())
+
+    file File @relation(fields:[fileId], references:[id])
+}
+
+enum FileStatus{
+    PENDING
+    IN_PROGRESS
+    SUCCESS
+    FAILED
+}

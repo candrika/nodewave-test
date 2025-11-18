@@ -1,0 +1,173 @@
+{
+  "info": {
+    "name": "NodeWave Backend API",
+    "_postman_id": "nodewave-collection-001",
+    "description": "Postman Collection for NodeWave File Processing Backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"password\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4000/api/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "login"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Login Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"token\": \"JWT_TOKEN_EXAMPLE\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "File Upload",
+      "item": [
+        {
+          "name": "Upload Excel File",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "/path/to/sample.xlsx"
+                }
+              ]
+            },
+            "url": "http://localhost:4000/api/upload"
+          },
+          "response": [
+            {
+              "name": "Upload Response",
+              "code": 200,
+              "body": "{\n  \"id\": \"file_123\",\n  \"originalName\": \"data.xlsx\",\n  \"status\": \"PENDING\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Files",
+      "item": [
+        {
+          "name": "List Files",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "http://localhost:4000/api"
+          },
+          "response": [
+            {
+              "code": 200,
+              "body": "{\n  \"page\": 1,\n  \"limit\": 10,\n  \"total\": 1,\n  \"data\": [\n    {\n      \"id\": \"file_123\",\n      \"originalName\": \"data.xlsx\",\n      \"status\": \"DONE\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get File Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "http://localhost:4000/api/FILE_ID"
+          },
+          "response": [
+            {
+              "code": 200,
+              "body": "{\n  \"id\": \"file_123\",\n  \"status\": \"DONE\",\n  \"processedRows\": [\n    {\n      \"id\": 1,\n      \"rowData\": {\n        \"col1\": \"value\"\n      }\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Retry File",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "http://localhost:4000/api/FILE_ID/retry"
+          },
+          "response": [
+            {
+              "code": 200,
+              "body": "{\n  \"message\": \"Retry queued\",\n  \"fileId\": \"file_123\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get File Logs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "http://localhost:4000/api/FILE_ID/logs"
+          },
+          "response": [
+            {
+              "code": 200,
+              "body": "[\n  {\n    \"event\": \"START\",\n    \"message\": \"Processing started\"\n  },\n  {\n    \"event\": \"DONE\",\n    \"message\": \"Processing completed\"\n  }\n]"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "token",
+      "value": ""
+    }
+  ]
+}
